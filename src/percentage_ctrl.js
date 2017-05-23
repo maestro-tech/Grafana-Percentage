@@ -70,38 +70,26 @@ export class PercentagePluginCtrl extends SingleStatCtrl {
         scopedVars: scopedVars,
         cacheTimeout: this.panel.cacheTimeout
       };
-
-      const dayI = this.panel.dayInterval === 'NOW' ? moment().date() : this.panel.dayInterval;
-      const hourI = this.panel.hourInterval === 'NOW' ? moment().hour() : this.panel.hourInterval;
-      const minuteI = this.panel.minuteInterval === 'NOW' ? moment().minute() : this.panel.minuteInterval;
-
-      const thisMonth = moment(metricsQuery.range.to).date(dayI).hour(hourI).minute(minuteI);
-      const beginThisMonth = moment(thisMonth).startOf('month');
-      const lastMonth = moment(thisMonth).subtract(1, 'month');
-      const beginLastMonth = moment(lastMonth).startOf('month');
-
-      const metricCop = Object.assign({}, metricsQuery);
-      metricsQuery.rangeRaw.from = beginThisMonth;
-      metricsQuery.rangeRaw.to = thisMonth;
-      return datasource.query(metricsQuery)
-      .then((res1) => {
-        metricCop.rangeRaw.from = beginLastMonth;
-        metricCop.rangeRaw.to = lastMonth;
-        this.panel.title = `Delta ${beginLastMonth.format('DD-MM hh-mm-ss a')} / ${lastMonth.format('DD-MM hh-mm-ss a')} - ${beginThisMonth.format('DD-MM hh-mm-ss a')} / ${thisMonth.format('DD-MM hh-mm-ss a')}`;
-        return datasource.query(metricCop)
-        .then((res2) => resolve([res1, res2]))
-        .catch((err) => reject(err));
-      })
-      .catch((err) => reject(err));
+      return resolve(datasource.query(metricsQuery));
     });
   }
 
-  handleQueryResult(results) {
+  handleQueryResult(result) {
     this.setTimeQueryEnd();
     this.loading = false;
 
-    results[0].data[0].datapoints[0][0] -= results[1].data[0].datapoints[0][0]
-    var result = results[0];
+    if (result.data.length != 2) {
+      let error = new Error();
+      error.message = 'Not enougth series error';
+      error.data = 'Metric query returns ' + result.data.length + ' series.\nPercentage stat panel expects two series.';
+      throw error;
+    }
+    if (result.data[0].datapoints.length != 1 || result.data[1].datapoints.length != 1) {
+      let error = new Error();
+      error.message = 'Some values are not aggregated. Single result from each query is needed';
+      error.data = error.message;
+      throw error;
+    }
 
     // check for if data source returns subject
     if (result && result.subscribe) {
@@ -117,6 +105,12 @@ export class PercentagePluginCtrl extends SingleStatCtrl {
       console.log('Data source query result invalid, missing data field:', result);
       result = {data: []};
     }
+
+    let percentage = (result.data[0].datapoints[0][0] / result.data[1].datapoints[0][0]) * 100
+
+    result.data.splice(1, 1);
+
+    result.data[0].datapoints[0][0] = percentage;
 
     return this.events.emit('data-received', result.data);
   }
