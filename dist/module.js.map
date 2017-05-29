@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/module.js"],"names":["PercentagePluginCtrl"],"mappings":";;;;;;;;AACQA,0B,oBAAAA,oB;;;2BAGNA,oB","file":"module.js","sourcesContent":["\nimport {PercentagePluginCtrl} from './percentage_ctrl';\n\nexport {\n  PercentagePluginCtrl as PanelCtrl\n};\n"]}
