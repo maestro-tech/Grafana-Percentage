@@ -149,7 +149,7 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', 'jquery', 'jquery.flot',
           key: 'onInitEditMode',
           value: function onInitEditMode() {
             this.fontSizes = ['20%', '30%', '50%', '70%', '80%', '100%', '110%', '120%', '150%', '170%', '200%'];
-            this.addEditorTab('Metrics', 'public/plugins/grafana-delta-panel/editor.html', 2);
+            this.addEditorTab('Metrics', 'public/plugins/grafana-percentage-panel/editor.html', 2);
             this.addEditorTab('Options', 'public/app/plugins/panel/singlestat/editor.html', 3);
             this.addEditorTab('Value Mappings', 'public/app/plugins/panel/singlestat/mappings.html', 4);
             this.unitFormats = kbn.getUnitFormats();
@@ -343,7 +343,7 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', 'jquery', 'jquery.flot',
           }
         }, {
           key: 'handleQueryResult',
-          value: function handleQueryResult(results) {
+          value: function handleQueryResult(result) {
             this.setTimeQueryEnd();
             this.loading = false;
 
