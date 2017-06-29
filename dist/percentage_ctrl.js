@@ -419,6 +419,22 @@ System.register(['app/plugins/sdk', 'moment', 'lodash', 'jquery', 'jquery.flot',
             return series;
           }
         }, {
+          key: 'addQuery',
+          value: function addQuery(target) {
+            target.refId = this.dashboard.getNextQueryLetter(this.panel);
+
+            this.panel.targets.push(target);
+            this.nextRefId = this.dashboard.getNextQueryLetter(this.panel);
+          }
+        }, {
+          key: 'removeQuery',
+          value: function removeQuery(target) {
+            var index = _.indexOf(this.panel.targets, target);
+            this.panel.targets.splice(index, 1);
+            this.nextRefId = this.dashboard.getNextQueryLetter(this.panel);
+            this.refresh();
+          }
+        }, {
           key: 'tableHandler',
           value: function tableHandler(tableData) {
             var datapoints = [];

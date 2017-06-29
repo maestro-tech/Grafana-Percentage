@@ -336,6 +336,20 @@ export class PercentagePluginCtrl extends PanelCtrl {
     return series;
   }
 
+  addQuery(target) {
+    target.refId = this.dashboard.getNextQueryLetter(this.panel);
+
+    this.panel.targets.push(target);
+    this.nextRefId = this.dashboard.getNextQueryLetter(this.panel);
+  }
+
+  removeQuery(target) {
+    var index = _.indexOf(this.panel.targets, target);
+    this.panel.targets.splice(index, 1);
+    this.nextRefId = this.dashboard.getNextQueryLetter(this.panel);
+    this.refresh();
+  }
+
   tableHandler(tableData) {
     const datapoints = [];
     const columnNames = {};
